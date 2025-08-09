@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Resume Scanner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* This is the beautiful CSS from your preferred design */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #ae81df, #7199de);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 450px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 20px 0 8px;
+      font-weight: 600;
+      color: #444;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .custom-file-upload {
+      display: inline-block;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #2575fc;
+      color: white;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .custom-file-upload:hover {
+      background-color: #1a5fd4;
+    }
+    .file-name {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #555;
+      min-height: 20px; /* Prevents layout shift */
+    }
+    button#submitBtn {
+      margin-top: 30px;
+      width: 100%;
+      padding: 14px;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button#submitBtn:hover {
+      background-color: #5013aa;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 15px;
+      color: green;
+      text-align: center;
+    }
+
+    /* --- NEW STYLES FOR THE DROPDOWN --- */
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      color: #333;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      /* Custom arrow */
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 15px top 50%;
+      background-size: .65em auto;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>AI Resume Scanner</h2>
+
+  <!-- NEW HTML STRUCTURE -->
+  <label for="jd_select">Select Job Description:</label>
+  <select id="jd_select">
+    <option value="" disabled selected>Choose a JD...</option>
+    <!-- Options will be populated by JavaScript -->
+  </select>
+
+  <label for="resume_files">Upload Resumes:</label>
+  <label class="custom-file-upload">
+    <input type="file" id="resume_files" accept=".pdf,.doc,.docx" onchange="updateFileName()" multiple />
+    Choose Resumes
+  </label>
+  <div class="file-name" id="resume-name">No file selected</div>
+
+  <button id="submitBtn" onclick="submitFiles()">Submit for Analysis</button>
+  <div class="message" id="msg"></div>
+</div>
+
+<script>
+  // This JavaScript is the same as the previous version and is correct.
+  const FLASK_SERVER_URL = 'http://127.0.0.1:5000';
+
+  async function fetchJobDescriptions() {
+    const select = document.getElementById('jd_select');
+    try {
+      const response = await fetch(`${FLASK_SERVER_URL}/get-jds`);
+      const jds = await response.json();
+      
+      jds.forEach(jd => {
+        const option = document.createElement('option');
+        option.value = jd.key;
+        option.textContent = jd.name;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Failed to fetch job descriptions:", error);
+      select.options[0].textContent = "Error loading JDs";
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', fetchJobDescriptions);
+
+  function updateFileName() {
+    const fileInput = document.getElementById('resume_files');
+    const fileNameDiv = document.getElementById('resume-name');
+    if (fileInput.files.length > 0) {
+      fileNameDiv.textContent = `${fileInput.files.length} file(s) selected`;
+    } else {
+      fileNameDiv.textContent = "No file selected";
+    }
+  }
+
+  async function submitFiles() {
+    const resumeFiles = document.getElementById('resume_files').files;
+    const selectedJdKey = document.getElementById('jd_select').value;
+    const msg = document.getElementById('msg');
+
+    if (resumeFiles.length === 0 || !selectedJdKey) {
+      msg.textContent = "⚠️ Please select a Job Description and at least one Resume.";
+      msg.style.color = "red";
+      return;
+    }
+
+    msg.textContent = "⏳ Uploading resumes...";
+    msg.style.color = "black";
+
+    const formData = new FormData();
+    formData.append('jd_key', selectedJdKey);
+
+    for (let i = 0; i < resumeFiles.length; i++) {
+        formData.append('resumes', resumeFiles[i]);
+    }
+
+    try {
+      const response = await fetch(`${FLASK_SERVER_URL}/upload-and-trigger`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (response.ok) {
+        msg.style.color = 'green';
+        msg.textContent = `✅ Files uploaded. Analysis for batch ${data.batchId} started.`;
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = `❌ Upload failed: ${data.error}`;
+      }
+    } catch (err) {
+      console.error('Fetch Error:', err);
+      msg.style.color = 'red';
+      msg.textContent = "❌ Upload error: Failed to connect to the server.";
+    }
+  }
+</script>
+
+</body>
+</html>

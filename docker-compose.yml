@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  new_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    command: streamlit run new_app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+  new_hr:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    command: streamlit run new_hr.py --server.port=8502 --server.address=0.0.0.0
+    ports:
+      - "8502:8502"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+  new_manager:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    command: streamlit run new_manager.py --server.port=8503 --server.address=0.0.0.0
+    ports:
+      - "8503:8503"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+  resume:
+    build:
+      context: .
+      dockerfile: Dockerfile.flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+

@@ -1,0 +1,28 @@
+# Use official python image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements (we'll create this file next)
+COPY requirements_streamlit.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements_streamlit.txt
+
+# Copy app files
+COPY new_app.py new_hr.py new_manager.py /app/
+
+# Copy templates folder (if needed)
+COPY templates /app/templates
+
+# Streamlit runs on port 8501 by default, but each app runs on different ports, so we will pass that at run time.
+
+# Streamlit configuration for browser and port (will override at container run)
+ENV STREAMLIT_SERVER_ENABLE_CORS false
+ENV STREAMLIT_SERVER_HEADLESS true
+ENV STREAMLIT_SERVER_PORT 8501
+
+# Default command (can be overridden)
+CMD ["streamlit", "run", "new_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+

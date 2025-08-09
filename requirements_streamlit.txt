@@ -1,0 +1,8 @@
+streamlit
+boto3
+botocore
+pandas
+plotly
+fpdf
+streamlit_cognito_auth
+
