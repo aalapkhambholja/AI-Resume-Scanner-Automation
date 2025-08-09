@@ -1,15 +1,34 @@
-AI Resume Scanner
+# AI Resume Scanner
 
-A multi-service AI-powered resume processing application consisting of three Streamlit dashboards (HR, Manager, and Main app) and a Flask backend API. The solution integrates AWS services via boto3 for data management, authentication with Cognito, and features resume parsing, candidate tracking, and analytics.
+AI Resume Scanner is a multi-service AI-powered application designed to help HR and management teams process and analyze resumes efficiently. The project consists of three Streamlit dashboards for different user roles and a Flask backend API, all integrated with AWS services for data management and authentication.
 
-new_app.py: Main Streamlit app running on port 8501
+## Features
 
-new_hr.py: HR dashboard on port 8502
+- **Main App (`new_app.py`)**: Streamlit interface running on port 8501 for general resume scanning and processing.
+- **HR Dashboard (`new_hr.py`)**: Streamlit dashboard running on port 8502 to manage candidates, view analytics, and communicate with applicants.
+- **Manager Dashboard (`new_manager.py`)**: Streamlit dashboard running on port 8503 to review resumes, track candidate progress, and generate reports.
+- **Backend API (`resume.py`)**: Flask application running on port 5000 to handle backend logic, serve APIs, and manage AWS DynamoDB interactions.
+- AWS Cognito authentication integration via `streamlit_cognito_auth`.
+- Uses AWS SDK for Python (`boto3`) for accessing AWS services securely.
+- Fully Dockerized with separate containers for each app managed via Docker Compose.
 
-new_manager.py: Manager dashboard on port 8503
+## Folder Structure
 
-resume.py: Flask API backend running on port 5000
+AI-Resume-Scanner/
+├── new_app.py
+├── new_hr.py
+├── new_manager.py
+├── resume.py
+├── templates/
+│ └── resume.html
+├── Dockerfile.streamlit
+├── Dockerfile.flask
+├── docker-compose.yml
+├── requirements_streamlit.txt
+|-- .env
+├── requirements_flask.txt
+└── README.md
 
-Uses AWS SDK for Python (boto3) to interact with AWS services securely
-
-Dockerized with multi-container setup using Docker Compose for easy deployment
+## Create a .env file with your AWS credentials:
+AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
