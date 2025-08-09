@@ -33,3 +33,11 @@ AI-Resume-Scanner/
 ## Create a .env file with your AWS credentials:
 AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
+
+Main app: http://localhost:8501
+
+HR dashboard: http://localhost:8502
+
+Manager dashboard: http://localhost:8503
+
+Backend API: http://localhost:5000
