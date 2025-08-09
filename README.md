@@ -25,8 +25,8 @@ AI-Resume-Scanner/
 ├── Dockerfile.flask
 ├── docker-compose.yml
 ├── requirements_streamlit.txt
-|-- .env
 ├── requirements_flask.txt
+├── .env
 └── README.md
 
 ## Create a .env file with your AWS credentials:
